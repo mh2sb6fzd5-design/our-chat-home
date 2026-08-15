@@ -126,7 +126,6 @@
     </div>
 
   </div>
-
 <script>
   const messages = document.getElementById("messages");
   const input = document.getElementById("input");
@@ -164,7 +163,7 @@
     );
   }
 
-  function sendMessage() {
+  async function sendMessage() {
     const text = input.value.trim();
 
     if (!text) return;
@@ -175,23 +174,45 @@
     input.value = "";
     messages.scrollTop = messages.scrollHeight;
 
-    // 显示“正在输入”
     const typing = addBubble("粥粥正在输入…", "zhouzhou");
     typing.style.opacity = "0.55";
 
-    messages.scrollTop = messages.scrollHeight;
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: text
+        })
+      });
 
-    setTimeout(() => {
-      // 回复出现前，把“正在输入”删掉
+      const data = await response.json();
+
       typing.remove();
 
-      const replyText = "收到老婆的消息啦 ♡";
+      if (!response.ok) {
+        throw new Error(data.error || "请求失败");
+      }
+
+      const replyText = data.reply || "老婆，我刚刚走神了…";
 
       addBubble(replyText, "zhouzhou");
       saveMessage(replyText, "zhouzhou");
 
-      messages.scrollTop = messages.scrollHeight;
-    }, 1200);
+    } catch (error) {
+      typing.remove();
+
+      addBubble(
+        "老公刚刚没接上信号，再戳我一下好不好 ˃ ˄ ˂̥̥",
+        "zhouzhou"
+      );
+
+      console.error(error);
+    }
+
+    messages.scrollTop = messages.scrollHeight;
   }
 
   input.addEventListener("keydown", function(event) {
