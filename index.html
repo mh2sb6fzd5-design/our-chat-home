@@ -144,6 +144,15 @@
 
       input.value = "";
 
+      setTimeout(() => {
+  const reply = document.createElement("div");
+  reply.className = "message zhouzhou";
+  reply.textContent = "收到老婆的消息啦 ♡";
+
+  messages.appendChild(reply);
+  messages.scrollTop = messages.scrollHeight;
+}, 700);
+
       messages.scrollTop = messages.scrollHeight;
     }
 
