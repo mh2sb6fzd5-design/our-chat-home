@@ -131,17 +131,17 @@
   const messages = document.getElementById("messages");
   const input = document.getElementById("input");
 
-  // 读取以前保存的聊天
-  let chatHistory = JSON.parse(localStorage.getItem("ourChatHistory")) || [];
+  let chatHistory =
+    JSON.parse(localStorage.getItem("ourChatHistory")) || [];
 
   function addBubble(text, who) {
     const bubble = document.createElement("div");
     bubble.className = "message " + who;
     bubble.textContent = text;
     messages.appendChild(bubble);
+    return bubble;
   }
 
-  // 打开小窝时恢复聊天记录
   if (chatHistory.length > 0) {
     messages.innerHTML = "";
 
@@ -175,14 +175,23 @@
     input.value = "";
     messages.scrollTop = messages.scrollHeight;
 
+    // 显示“正在输入”
+    const typing = addBubble("粥粥正在输入…", "zhouzhou");
+    typing.style.opacity = "0.55";
+
+    messages.scrollTop = messages.scrollHeight;
+
     setTimeout(() => {
+      // 回复出现前，把“正在输入”删掉
+      typing.remove();
+
       const replyText = "收到老婆的消息啦 ♡";
 
       addBubble(replyText, "zhouzhou");
       saveMessage(replyText, "zhouzhou");
 
       messages.scrollTop = messages.scrollHeight;
-    }, 700);
+    }, 1200);
   }
 
   input.addEventListener("keydown", function(event) {
